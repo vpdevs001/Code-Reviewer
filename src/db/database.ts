@@ -37,6 +37,15 @@ export async function getSnippets(): Promise<SnippetRow[]> {
   );
 }
 
+export async function getSnippetById(id: number): Promise<SnippetRow | null> {
+  const db = await getDb();
+  const rows = await db.getAllAsync<SnippetRow>(
+    "SELECT id, title, code, favorite, createdAt FROM snippets WHERE id = ?",
+    [id],
+  );
+  return rows[0] ?? null;
+}
+
 export async function addSnippet(title: string, code: string) {
   const db = await getDb();
   const createdAt = new Date().toISOString();

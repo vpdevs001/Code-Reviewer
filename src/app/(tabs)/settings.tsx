@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Switch, TextInput, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Switch, TextInput, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../hooks/theme";
 import { getUsername, saveUsername } from "../../utils/userStorage";
@@ -52,13 +52,16 @@ const settings = () => {
             placeholderTextColor={colors.subtext}
             style={[styles.input, { color: colors.text, borderColor: colors.border }]}
           />
-          <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: colors.primary }]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.saveButton,
+              { backgroundColor: colors.primary, opacity: pressed ? 0.85 : 1 },
+            ]}
             onPress={handleSaveUsername}
             accessibilityLabel="Save username"
           >
             <Text style={[styles.saveButtonText, { color: colors.card }]}>Save</Text>
-          </TouchableOpacity>
+          </Pressable>
           {saved ? <Text style={[styles.savedText, { color: colors.primary }]}>Name saved</Text> : null}
         </View>
       </View>
