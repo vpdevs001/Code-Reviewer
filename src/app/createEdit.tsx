@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
 } from "react-native";
 import { addSnippet, getSnippetById, updateSnippet } from "../db/database";
 import { useTheme } from "../hooks/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateEdit() {
   const { colors } = useTheme();

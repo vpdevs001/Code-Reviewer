@@ -77,3 +77,8 @@ export async function deleteSnippet(id: number) {
   const db = await getDb();
   await db.runAsync("DELETE FROM snippets WHERE id = ?", [id]);
 }
+
+export async function deleteAllSnippets() {
+  const db = await getDb();
+  await db.runAsync("DELETE FROM snippets");
+}

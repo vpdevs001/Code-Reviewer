@@ -12,12 +12,17 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Greetings from "../../components/Greetings";
 import SearchBar from "../../components/SearchBar";
-import { getSnippets, initDb, SnippetRow } from "../../db/database";
+import {
+  deleteSnippet,
+  getSnippets,
+  initDb,
+  SnippetRow,
+} from "../../db/database";
 import { useTheme } from "../../hooks/theme";
 import { getUsername } from "../../utils/userStorage";
 
 export default function Index() {
-  const [status, setStatus] = useState("Initializing database...");
+  const [status, setStatus] = useState("Getting all the snippets ready");
   const [snippets, setSnippets] = useState<SnippetRow[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [username, setUsername] = useState("");
@@ -28,6 +33,7 @@ export default function Index() {
   useEffect(() => {
     async function setup() {
       try {
+        setStatus("Getting all the snippets ready");
         await initDb();
         const rows = await getSnippets();
         setSnippets(rows);
@@ -69,8 +75,14 @@ export default function Index() {
     router.push("/createEdit");
   }
 
+  async function handleDeleteSnippet(snippetId: number) {
+    await deleteSnippet(snippetId);
+    const rows = await getSnippets();
+    setSnippets(rows);
+  }
+
   function handleSnippetPress(snippetId: number) {
-    router.push(`/createEdit?id=${snippetId}`);
+    router.push(`/snippet/${snippetId}`);
   }
 
   return (
@@ -103,6 +115,7 @@ export default function Index() {
             {filteredSnippets.length === 1 ? "" : "s"}
           </Text>
         </View>
+        <Text style={[styles.status, { color: colors.subtext }]}>{status}</Text>
 
         <FlatList
           data={filteredSnippets}
@@ -117,50 +130,69 @@ export default function Index() {
             </View>
           }
           renderItem={({ item }) => (
-            <Pressable
-              onPress={() => handleSnippetPress(item.id)}
-              style={({ pressed }) => [
+            <View
+              style={[
                 styles.card,
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
-                  opacity: pressed ? 0.9 : 1,
                 },
               ]}
             >
-              <View style={styles.cardHeader}>
-                <Text
-                  style={[styles.cardTitle, { color: colors.text }]}
-                  numberOfLines={1}
-                >
-                  {item.title}
-                </Text>
-                <Feather
-                  name="chevron-right"
-                  size={20}
-                  color={colors.subtext}
-                />
-              </View>
-              <Text
-                style={[styles.cardSubtitle, { color: colors.subtext }]}
-                numberOfLines={3}
+              <Pressable
+                onPress={() => handleSnippetPress(item.id)}
+                style={({ pressed }) => [
+                  styles.cardContent,
+                  { opacity: pressed ? 0.95 : 1 },
+                ]}
               >
-                {item.code}
-              </Text>
-              <View style={styles.cardFooter}>
-                <View
-                  style={[styles.badge, { backgroundColor: colors.border }]}
+                <View style={styles.cardHeader}>
+                  <Text
+                    style={[styles.cardTitle, { color: colors.text }]}
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
+                  <Feather
+                    name="chevron-right"
+                    size={20}
+                    color={colors.subtext}
+                  />
+                </View>
+                <Text
+                  style={[styles.cardSubtitle, { color: colors.subtext }]}
+                  numberOfLines={3}
                 >
-                  <Feather name="code" size={14} color={colors.text} />
-                  <Text style={[styles.badgeText, { color: colors.text }]}>
-                    Snippet
+                  {item.code}
+                </Text>
+                <View style={styles.cardFooter}>
+                  <View
+                    style={[styles.badge, { backgroundColor: colors.border }]}
+                  >
+                    <Feather name="code" size={14} color={colors.text} />
+                    <Text style={[styles.badgeText, { color: colors.text }]}>
+                      Snippet
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardDate, { color: colors.subtext }]}>
+                    {new Date(item.createdAt).toLocaleDateString()}
                   </Text>
                 </View>
-                <Text style={[styles.cardDate, { color: colors.subtext }]}>
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </Text>
-              </View>
-            </Pressable>
+              </Pressable>
+              <Pressable
+                onPress={() => handleDeleteSnippet(item.id)}
+                style={({ pressed }) => [
+                  styles.cardDelete,
+                  {
+                    borderColor: colors.error,
+                    opacity: pressed ? 0.7 : 1,
+                  },
+                ]}
+                accessibilityLabel="Delete snippet"
+              >
+                <Feather name="trash-2" size={18} color={colors.error} />
+              </Pressable>
+            </View>
           )}
         />
       </Animated.View>
@@ -174,6 +206,10 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingBottom: 16,
+  },
+  status: {
+    fontSize: 14,
+    marginTop: 2,
   },
   content: {
     flex: 1,
@@ -261,5 +297,16 @@ const styles = StyleSheet.create({
   },
   cardDate: {
     fontSize: 12,
+  },
+  cardContent: {
+    flex: 1,
+  },
+  cardDelete: {
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
   },
 });

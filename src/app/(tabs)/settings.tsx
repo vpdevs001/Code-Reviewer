@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Switch, TextInput, Pressable } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../hooks/theme";
 import { getUsername, saveUsername } from "../../utils/userStorage";
+import { deleteAllSnippets } from "../../db/database";
 
 const settings = () => {
   const { theme, colors, toggleTheme } = useTheme();
@@ -64,6 +65,23 @@ const settings = () => {
           </Pressable>
           {saved ? <Text style={[styles.savedText, { color: colors.primary }]}>Name saved</Text> : null}
         </View>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.deleteAllButton,
+            {
+              borderColor: colors.error,
+              opacity: pressed ? 0.85 : 1,
+            },
+          ]}
+          onPress={async () => {
+            await deleteAllSnippets();
+          }}
+          accessibilityLabel="Delete all snippets"
+        >
+          <Text style={[styles.deleteAllText, { color: colors.error }]}>Delete all snippets</Text>
+          <Text style={[styles.deleteWarning, { color: colors.error }]}>This is permanent and will remove every saved snippet.</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -124,5 +142,20 @@ const styles = StyleSheet.create({
   savedText: {
     marginTop: 10,
     fontSize: 14,
+  },
+  deleteAllButton: {
+    marginTop: 28,
+    borderWidth: 1,
+    borderRadius: 14,
+    padding: 16,
+  },
+  deleteAllText: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  deleteWarning: {
+    marginTop: 8,
+    fontSize: 13,
+    lineHeight: 18,
   },
 });
