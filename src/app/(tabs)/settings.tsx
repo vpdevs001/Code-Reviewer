@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Switch, TextInput, Pressable } from "react-native";
+import { Alert, StyleSheet, Text, View, Switch, TextInput, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { fonts } from "../../constants/typography";
 import { useTheme } from "../../hooks/theme";
 import { getUsername, saveUsername } from "../../utils/userStorage";
 import { deleteAllSnippets } from "../../db/database";
@@ -24,6 +25,24 @@ const settings = () => {
   async function handleSaveUsername() {
     await saveUsername(username.trim());
     setSaved(true);
+  }
+
+  function confirmDeleteAll() {
+    Alert.alert(
+      "Delete all snippets",
+      "Are you sure you want to delete all snippets? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete all",
+          style: "destructive",
+          onPress: async () => {
+            await deleteAllSnippets();
+            Alert.alert("Deleted", "All snippets have been removed.");
+          },
+        },
+      ],
+    );
   }
 
   return (
@@ -74,9 +93,7 @@ const settings = () => {
               opacity: pressed ? 0.85 : 1,
             },
           ]}
-          onPress={async () => {
-            await deleteAllSnippets();
-          }}
+          onPress={confirmDeleteAll}
           accessibilityLabel="Delete all snippets"
         >
           <Text style={[styles.deleteAllText, { color: colors.error }]}>Delete all snippets</Text>
@@ -96,52 +113,57 @@ const styles = StyleSheet.create({
   inner: {
     flex: 1,
     justifyContent: "flex-start",
-    padding: 24,
+    padding: 28,
   },
   text: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 20,
+    fontSize: 22,
+    fontFamily: fonts.bold,
+    marginBottom: 24,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 8,
     backgroundColor: "transparent",
     borderRadius: 10,
     width: "100%",
+    marginBottom: 24,
   },
   label: {
     fontSize: 16,
+    fontFamily: fonts.semiBold,
   },
   settingGroup: {
     width: "100%",
     borderWidth: 1,
     borderRadius: 14,
-    padding: 16,
-    marginTop: 24,
+    padding: 18,
+    marginTop: 28,
   },
   input: {
     width: "100%",
     borderWidth: 1,
     borderRadius: 10,
-    padding: 12,
-    marginTop: 10,
+    padding: 14,
+    marginTop: 14,
+    minHeight: 50,
+    fontFamily: fonts.regular,
   },
   saveButton: {
-    marginTop: 14,
-    paddingVertical: 12,
+    marginTop: 18,
+    paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
   },
   saveButtonText: {
-    fontWeight: "600",
+    fontFamily: fonts.semiBold,
   },
   savedText: {
     marginTop: 10,
     fontSize: 14,
+    fontFamily: fonts.regular,
   },
   deleteAllButton: {
     marginTop: 28,
@@ -151,11 +173,12 @@ const styles = StyleSheet.create({
   },
   deleteAllText: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: fonts.bold,
   },
   deleteWarning: {
     marginTop: 8,
     fontSize: 13,
     lineHeight: 18,
+    fontFamily: fonts.regular,
   },
 });

@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { fonts } from "../constants/typography";
 import { addSnippet, getSnippetById, updateSnippet } from "../db/database";
 import { useTheme } from "../hooks/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -147,22 +148,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 24,
-    paddingBottom: 40,
+    padding: 28,
+    paddingBottom: 44,
   },
   formHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 28,
   },
   pageTitle: {
     fontSize: 24,
-    fontWeight: "800",
+    fontFamily: fonts.extraBold,
   },
   saveButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     borderRadius: 14,
   },
   saveButtonContent: {
@@ -170,8 +171,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveButtonText: {
-    fontWeight: "700",
     fontSize: 14,
+    fontFamily: fonts.bold,
   },
   loadingContainer: {
     height: 220,
@@ -181,21 +182,24 @@ const styles = StyleSheet.create({
   field: {
     borderWidth: 1,
     borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
+    padding: 18,
+    marginBottom: 24,
   },
   fieldLabel: {
-    fontSize: 14,
-    marginBottom: 10,
-    fontWeight: "600",
+    fontSize: 15,
+    marginBottom: 12,
+    fontFamily: fonts.semiBold,
   },
   input: {
     fontSize: 16,
-    minHeight: 44,
+    minHeight: 48,
+    fontFamily: fonts.regular,
   },
   codeInput: {
     fontSize: 16,
-    minHeight: 180,
+    minHeight: 220,
     textAlignVertical: "top",
+    fontFamily: fonts.code,
+    lineHeight: 24,
   },
 });

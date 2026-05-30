@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { fonts } from "../constants/typography";
 import { useTheme } from "../hooks/theme";
 
 type GreetingsProps = {
@@ -12,8 +13,12 @@ export default function Greetings({ username }: GreetingsProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.text }]}>Hello {displayName}</Text>
-      <Text style={[styles.subtitle, { color: colors.subtext }]}>Let's get some cool snippets managed throughout</Text>
+      <Text style={[styles.title, { color: colors.text }]}>
+        Hello, {displayName}!
+      </Text>
+      <Text style={[styles.subtitle, { color: colors.subtext }]}>
+        Let's get some cool snippets managed throughout!!
+      </Text>
     </View>
   );
 }
@@ -21,16 +26,19 @@ export default function Greetings({ username }: GreetingsProps) {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    marginBottom: 22,
   },
   title: {
-    fontSize: 32,
-    fontWeight: "800",
-    marginBottom: 8,
+    fontSize: 34,
+    fontFamily: fonts.extraBold,
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.regular,
     color: "#666",
   },
 });

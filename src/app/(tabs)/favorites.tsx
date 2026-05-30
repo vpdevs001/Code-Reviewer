@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Greetings from "../../components/Greetings";
+import { fonts } from "../../constants/typography";
 import { getUsername } from "../../utils/userStorage";
 import { useTheme } from "../../hooks/theme";
 
@@ -43,6 +44,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: fonts.semiBold,
   },
 });

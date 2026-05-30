@@ -1,7 +1,9 @@
 import { Feather } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Alert,
   Animated,
   FlatList,
   Pressable,
@@ -12,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Greetings from "../../components/Greetings";
 import SearchBar from "../../components/SearchBar";
+import { fonts } from "../../constants/typography";
 import {
   deleteSnippet,
   getSnippets,
@@ -23,6 +26,7 @@ import { getUsername } from "../../utils/userStorage";
 
 export default function Index() {
   const [status, setStatus] = useState("Getting all the snippets ready");
+  const [loading, setLoading] = useState(true);
   const [snippets, setSnippets] = useState<SnippetRow[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [username, setUsername] = useState("");
@@ -30,33 +34,44 @@ export default function Index() {
   const router = useRouter();
   const fade = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    async function setup() {
-      try {
-        setStatus("Getting all the snippets ready");
-        await initDb();
-        const rows = await getSnippets();
-        setSnippets(rows);
-        setStatus("SQLite ready");
-      } catch (error) {
-        setStatus(
-          `Failed to initialize: ${error instanceof Error ? error.message : "unknown error"}`,
-        );
-      }
+  const fetchSnippets = useCallback(async () => {
+    try {
+      setStatus("Getting all the snippets ready");
+      setLoading(true);
+      await initDb();
+      const rows = await getSnippets();
+      setSnippets(rows);
+      setStatus("SQLite ready");
+    } catch (error) {
+      setStatus(
+        `Failed to initialize: ${error instanceof Error ? error.message : "unknown error"}`,
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
+    async function loadUsername() {
       const storedName = await getUsername();
       if (storedName) {
         setUsername(storedName);
       }
     }
 
-    setup();
+    loadUsername();
     Animated.timing(fade, {
       toValue: 1,
       duration: 400,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [fade]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSnippets();
+    }, [fetchSnippets]),
+  );
 
   const filteredSnippets = useMemo(
     () =>
@@ -75,10 +90,23 @@ export default function Index() {
     router.push("/createEdit");
   }
 
-  async function handleDeleteSnippet(snippetId: number) {
-    await deleteSnippet(snippetId);
-    const rows = await getSnippets();
-    setSnippets(rows);
+  function handleDeleteSnippet(snippetId: number) {
+    Alert.alert(
+      "Delete snippet",
+      "Are you sure you want to delete this snippet?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            await deleteSnippet(snippetId);
+            const rows = await getSnippets();
+            setSnippets(rows);
+          },
+        },
+      ],
+    );
   }
 
   function handleSnippetPress(snippetId: number) {
@@ -115,8 +143,11 @@ export default function Index() {
             {filteredSnippets.length === 1 ? "" : "s"}
           </Text>
         </View>
-        <Text style={[styles.status, { color: colors.subtext }]}>{status}</Text>
-
+        {loading ? (
+          <Text style={[styles.status, { color: colors.subtext }]}>
+            {status}
+          </Text>
+        ) : null}
         <FlatList
           data={filteredSnippets}
           keyExtractor={(item) => item.id.toString()}
@@ -209,30 +240,35 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 14,
-    marginTop: 2,
+    marginTop: 6,
+    marginBottom: 16,
+    lineHeight: 20,
+    fontFamily: fonts.regular,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   heading: {
-    fontSize: 22,
-    fontWeight: "800",
+    fontSize: 24,
+    fontFamily: fonts.extraBold,
   },
   counter: {
-    fontSize: 14,
+    fontSize: 15,
+    fontFamily: fonts.semiBold,
   },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingTop: 12,
+    paddingBottom: 14,
   },
   addButton: {
     width: 48,
@@ -240,22 +276,25 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
+    marginLeft: 12,
   },
   listContent: {
-    paddingBottom: 24,
+    paddingBottom: 28,
   },
   emptyState: {
-    marginTop: 64,
+    marginTop: 72,
     alignItems: "center",
   },
   emptyText: {
     fontSize: 16,
+    lineHeight: 22,
+    fontFamily: fonts.regular,
   },
   card: {
     borderWidth: 1,
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 14,
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 18,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -266,18 +305,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 14,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: 19,
+    fontFamily: fonts.bold,
     flex: 1,
-    marginRight: 8,
+    marginRight: 10,
   },
   cardSubtitle: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 12,
+    fontSize: 15,
+    lineHeight: 24,
+    marginBottom: 16,
+    fontFamily: fonts.code,
   },
   cardFooter: {
     flexDirection: "row",
@@ -287,16 +327,18 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: 999,
   },
   badgeText: {
     fontSize: 12,
     marginLeft: 6,
+    fontFamily: fonts.semiBold,
   },
   cardDate: {
     fontSize: 12,
+    fontFamily: fonts.regular,
   },
   cardContent: {
     flex: 1,
@@ -304,9 +346,9 @@ const styles = StyleSheet.create({
   cardDelete: {
     borderWidth: 1,
     borderRadius: 14,
-    padding: 12,
+    padding: 14,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 16,
   },
 });

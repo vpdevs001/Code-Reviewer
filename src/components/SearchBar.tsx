@@ -1,6 +1,7 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { fonts } from "../constants/typography";
 import { useTheme } from "../hooks/theme";
 
 type SearchBarProps = {
@@ -26,22 +27,24 @@ export default function SearchBar({
       flexDirection: "row",
       alignItems: "center",
       marginHorizontal: inline ? 0 : 16,
-      marginBottom: inline ? 0 : 12,
+      marginBottom: inline ? 0 : 14,
       backgroundColor: colors.surface,
       borderRadius: 14,
       borderWidth: 1,
       borderColor: colors.border,
-      paddingHorizontal: 14,
-      paddingVertical: 10,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
       flex: inline ? 1 : undefined,
     },
     icon: {
-      marginRight: 10,
+      marginRight: 12,
     },
     input: {
       color: colors.text,
       fontSize: 16,
-      minHeight: 44,
+      fontFamily: fonts.regular,
+      minHeight: 46,
+      lineHeight: 22,
       flex: 1,
     },
   });

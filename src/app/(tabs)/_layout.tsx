@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import { fonts } from "../../constants/typography";
 import { useTheme } from "../../hooks/theme";
 
 export default function TabLayout() {
@@ -14,6 +15,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
+        },
+        tabBarLabelStyle: {
+          fontFamily: fonts.semiBold,
         },
       }}
     >
