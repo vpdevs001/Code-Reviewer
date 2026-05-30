@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SearchBar from "../components/SearchBar";
-import { lightColors } from "../constants/colors";
-import { addSnippet, getSnippets, initDb, SnippetRow } from "../db/database";
+import SearchBar from "../../components/SearchBar";
+import { lightColors } from "../../constants/colors";
+import { addSnippet, getSnippets, initDb, SnippetRow } from "../../db/database";
 
 export default function Index() {
   const [status, setStatus] = useState("Initializing database...");

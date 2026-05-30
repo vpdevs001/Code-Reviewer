@@ -1,18 +1,9 @@
-import { Tabs } from "expo-router";
-import { lightColors } from "../constants/colors";
+import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: lightColors.primary,
-        tabBarInactiveTintColor: lightColors.subtext,
-        tabBarStyle: {
-          backgroundColor: lightColors.surface,
-          borderTopColor: lightColors.border,
-        },
-      }}
-    />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+    </Stack>
   );
 }
