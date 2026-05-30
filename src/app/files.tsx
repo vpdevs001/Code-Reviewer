@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 const files = () => {
   return (
     <View>
       <Text>files</Text>
     </View>
-  )
-}
+  );
+};
 
-export default files
+export default files;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

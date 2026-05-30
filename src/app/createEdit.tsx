@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 const createEdit = () => {
   return (
     <View>
       <Text>createEdit</Text>
     </View>
-  )
-}
+  );
+};
 
-export default createEdit
+export default createEdit;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

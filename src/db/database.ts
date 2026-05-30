@@ -30,7 +30,7 @@ export async function initDb() {
   );
 }
 
-export async function fetchSnippets(): Promise<SnippetRow[]> {
+export async function getSnippets(): Promise<SnippetRow[]> {
   const db = await getDb();
   return db.getAllAsync<SnippetRow>(
     "SELECT id, title, code, favorite, createdAt FROM snippets ORDER BY createdAt DESC",
@@ -45,6 +45,15 @@ export async function addSnippet(title: string, code: string) {
     [title, code, createdAt],
   );
   return result.lastInsertRowId;
+}
+
+export async function updateSnippet(id: number, title: string, code: string) {
+  const db = await getDb();
+  await db.runAsync("UPDATE snippets SET title = ?, code = ? WHERE id = ?", [
+    title,
+    code,
+    id,
+  ]);
 }
 
 export async function toggleFavorite(id: number, favorite: boolean) {
