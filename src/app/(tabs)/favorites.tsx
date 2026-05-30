@@ -1,15 +1,15 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { lightColors } from "../../constants/colors";
+import { useTheme } from "../../hooks/theme";
 
 const favorites = () => {
+  const { colors } = useTheme();
+
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: lightColors.background }]}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
       <View style={styles.inner}>
-        <Text style={styles.text}>Favorites</Text>
+        <Text style={[styles.text, { color: colors.text }]}>Favorites</Text>
       </View>
     </SafeAreaView>
   );
@@ -30,6 +30,5 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     fontWeight: "600",
-    color: lightColors.text,
   },
 });

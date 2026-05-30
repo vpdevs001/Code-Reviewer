@@ -1,14 +1,25 @@
-import { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "../../components/SearchBar";
-import { lightColors } from "../../constants/colors";
 import { addSnippet, getSnippets, initDb, SnippetRow } from "../../db/database";
+import { useTheme } from "../../hooks/theme";
+import { useRouter } from "expo-router";
 
 export default function Index() {
   const [status, setStatus] = useState("Initializing database...");
   const [snippets, setSnippets] = useState<SnippetRow[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const { colors } = useTheme();
+  const router = useRouter();
+  const fade = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     async function setup() {
@@ -25,6 +36,7 @@ export default function Index() {
     }
 
     setup();
+    Animated.timing(fade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, []);
 
   async function handleAddSample() {
@@ -33,19 +45,31 @@ export default function Index() {
     setSnippets(rows);
   }
 
+  function handleAddRoute() {
+    router.push("/createEdit");
+  }
+
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: lightColors.background }]}
-    >
-      <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-      <View style={styles.content}>
-        <Text style={styles.heading}>code-reviewer</Text>
-        <Text style={styles.status}>{status}</Text>
-        <Text style={styles.counter}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
+      <View style={styles.topRow}>
+        <SearchBar inline value={searchQuery} onChangeText={setSearchQuery} />
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.primary }]}
+          onPress={handleAddRoute}
+          accessibilityLabel="Add code snippet"
+        >
+          <Text style={[styles.addButtonText, { color: colors.card }]}>Add</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Animated.View style={[styles.content, { opacity: fade }]}>
+        <Text style={[styles.heading, { color: colors.text }]}>code-reviewer</Text>
+        <Text style={[styles.status, { color: colors.subtext }]}>{status}</Text>
+        <Text style={[styles.counter, { color: colors.text }]}>
           {snippets.length} saved snippet{snippets.length === 1 ? "" : "s"}
         </Text>
-        <Button title="Add sample snippet" onPress={handleAddSample} />
-      </View>
+        <Button title="Add sample snippet" onPress={handleAddSample} color={colors.primary} />
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -53,7 +77,6 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: lightColors.background,
   },
   content: {
     flex: 1,
@@ -65,14 +88,27 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     marginBottom: 16,
-    color: lightColors.text,
   },
   status: {
     marginBottom: 8,
-    color: lightColors.subtext,
   },
   counter: {
     marginBottom: 20,
-    color: lightColors.text,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    gap: 12,
+  },
+  addButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginLeft: 12,
+  },
+  addButtonText: {
+    fontWeight: "600",
   },
 });
