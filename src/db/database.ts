@@ -32,57 +32,30 @@ export async function initDb() {
 
 export async function fetchSnippets(): Promise<SnippetRow[]> {
   const db = await getDb();
-  const statement = await db.prepareAsync(
+  return db.getAllAsync<SnippetRow>(
     "SELECT id, title, code, favorite, createdAt FROM snippets ORDER BY createdAt DESC",
   );
-
-  try {
-    const result = await statement.executeAsync<SnippetRow>([]);
-    return result.getAllAsync();
-  } finally {
-    await statement.finalizeAsync();
-  }
 }
 
 export async function addSnippet(title: string, code: string) {
   const db = await getDb();
   const createdAt = new Date().toISOString();
-  const statement = await db.prepareAsync(
+  const result = await db.runAsync(
     "INSERT INTO snippets (title, code, favorite, createdAt) VALUES (?, ?, 0, ?)",
+    [title, code, createdAt],
   );
-
-  try {
-    const result = await statement.executeAsync<SnippetRow[]>([
-      title,
-      code,
-      createdAt,
-    ]);
-    return result.lastInsertRowId;
-  } finally {
-    await statement.finalizeAsync();
-  }
+  return result.lastInsertRowId;
 }
 
 export async function toggleFavorite(id: number, favorite: boolean) {
   const db = await getDb();
-  const statement = await db.prepareAsync(
-    "UPDATE snippets SET favorite = ? WHERE id = ?",
-  );
-
-  try {
-    await statement.executeAsync([favorite ? 1 : 0, id]);
-  } finally {
-    await statement.finalizeAsync();
-  }
+  await db.runAsync("UPDATE snippets SET favorite = ? WHERE id = ?", [
+    favorite ? 1 : 0,
+    id,
+  ]);
 }
 
 export async function deleteSnippet(id: number) {
   const db = await getDb();
-  const statement = await db.prepareAsync("DELETE FROM snippets WHERE id = ?");
-
-  try {
-    await statement.executeAsync([id]);
-  } finally {
-    await statement.finalizeAsync();
-  }
+  await db.runAsync("DELETE FROM snippets WHERE id = ?", [id]);
 }
