@@ -56,7 +56,7 @@ export default function SnippetCard({
               }
             >
               <FontAwesome
-                name={isFavorite ? "star" : "star-o"}
+                name={isFavorite ? "heart" : "heart-o"}
                 size={20}
                 color={isFavorite ? colors.accent : colors.subtext}
               />

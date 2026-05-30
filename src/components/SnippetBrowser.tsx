@@ -28,12 +28,14 @@ import SnippetCard from "./SnippetCard";
 
 type SnippetBrowserProps = {
   favoriteOnly?: boolean;
+  showAddButton?: boolean;
   title: string;
   emptyMessage: string;
 };
 
 export default function SnippetBrowser({
   favoriteOnly = false,
+  showAddButton = true,
   title,
   emptyMessage,
 }: SnippetBrowserProps) {
@@ -151,16 +153,18 @@ export default function SnippetBrowser({
 
         <View style={styles.topRow}>
           <SearchBar inline value={searchQuery} onChangeText={setSearchQuery} />
-          <Pressable
-            style={({ pressed }) => [
-              styles.addButton,
-              { backgroundColor: colors.text, opacity: pressed ? 0.7 : 1 },
-            ]}
-            onPress={handleAddRoute}
-            accessibilityLabel="Add code snippet"
-          >
-            <Feather name="plus" size={20} color={colors.background} />
-          </Pressable>
+          {showAddButton ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.addButton,
+                { backgroundColor: colors.text, opacity: pressed ? 0.7 : 1 },
+              ]}
+              onPress={handleAddRoute}
+              accessibilityLabel="Add code snippet"
+            >
+              <Feather name="plus" size={20} color={colors.background} />
+            </Pressable>
+          ) : null}
         </View>
       </View>
 
@@ -184,11 +188,11 @@ export default function SnippetBrowser({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             loading ? null : (
-            <View style={styles.emptyState}>
-              <Text style={[styles.emptyText, { color: colors.subtext }]}>
-                {emptyMessage}
-              </Text>
-            </View>
+              <View style={styles.emptyState}>
+                <Text style={[styles.emptyText, { color: colors.subtext }]}>
+                  {emptyMessage}
+                </Text>
+              </View>
             )
           }
           renderItem={({ item }) => (
