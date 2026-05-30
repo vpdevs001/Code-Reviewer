@@ -4,6 +4,9 @@ export type SnippetRow = {
   id: number;
   title: string;
   code: string;
+  language: string;
+  tags: string;
+  attachments: string;
   favorite: number;
   createdAt: string;
 };
@@ -24,6 +27,9 @@ export async function initDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       code TEXT NOT NULL,
+      language TEXT NOT NULL DEFAULT 'javascript',
+      tags TEXT NOT NULL DEFAULT '',
+      attachments TEXT NOT NULL DEFAULT '',
       favorite INTEGER NOT NULL DEFAULT 0,
       createdAt TEXT NOT NULL
     );`,
@@ -33,36 +39,48 @@ export async function initDb() {
 export async function getSnippets(): Promise<SnippetRow[]> {
   const db = await getDb();
   return db.getAllAsync<SnippetRow>(
-    "SELECT id, title, code, favorite, createdAt FROM snippets ORDER BY createdAt DESC",
+    "SELECT id, title, code, language, tags, attachments, favorite, createdAt FROM snippets ORDER BY createdAt DESC",
   );
 }
 
 export async function getSnippetById(id: number): Promise<SnippetRow | null> {
   const db = await getDb();
   const rows = await db.getAllAsync<SnippetRow>(
-    "SELECT id, title, code, favorite, createdAt FROM snippets WHERE id = ?",
+    "SELECT id, title, code, language, tags, attachments, favorite, createdAt FROM snippets WHERE id = ?",
     [id],
   );
   return rows[0] ?? null;
 }
 
-export async function addSnippet(title: string, code: string) {
+export async function addSnippet(
+  title: string,
+  code: string,
+  language: string = "javascript",
+  tags: string = "",
+  attachments: string = "",
+) {
   const db = await getDb();
   const createdAt = new Date().toISOString();
   const result = await db.runAsync(
-    "INSERT INTO snippets (title, code, favorite, createdAt) VALUES (?, ?, 0, ?)",
-    [title, code, createdAt],
+    "INSERT INTO snippets (title, code, language, tags, attachments, favorite, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?)",
+    [title, code, language, tags, attachments, createdAt],
   );
   return result.lastInsertRowId;
 }
 
-export async function updateSnippet(id: number, title: string, code: string) {
+export async function updateSnippet(
+  id: number,
+  title: string,
+  code: string,
+  language: string,
+  tags: string,
+  attachments: string,
+) {
   const db = await getDb();
-  await db.runAsync("UPDATE snippets SET title = ?, code = ? WHERE id = ?", [
-    title,
-    code,
-    id,
-  ]);
+  await db.runAsync(
+    "UPDATE snippets SET title = ?, code = ?, language = ?, tags = ?, attachments = ? WHERE id = ?",
+    [title, code, language, tags, attachments, id],
+  );
 }
 
 export async function toggleFavorite(id: number, favorite: boolean) {

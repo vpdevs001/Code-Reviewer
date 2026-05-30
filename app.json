@@ -31,9 +31,7 @@
           "enableFileSharing": true
         }
       ],
-
       "expo-router",
-
       [
         "expo-splash-screen",
         {
@@ -44,7 +42,8 @@
           }
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

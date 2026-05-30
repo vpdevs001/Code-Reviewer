@@ -71,11 +71,22 @@ export default function SnippetCard({
           {snippet.code}
         </Text>
         <View style={styles.cardFooter}>
-          <View style={[styles.badge, { backgroundColor: colors.border }]}>
-            <Feather name="code" size={14} color={colors.text} />
-            <Text style={[styles.badgeText, { color: colors.text }]}>
-              Snippet
-            </Text>
+          <View style={styles.badgesContainer}>
+            <View style={[styles.badge, { backgroundColor: colors.border }]}>
+              <Feather name="code" size={14} color={colors.text} />
+              <Text style={[styles.badgeText, { color: colors.text }]}>
+                {snippet.language || "javascript"}
+              </Text>
+            </View>
+            {snippet.tags && snippet.tags.trim() ? (
+              <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+                <Feather name="tag" size={14} color={colors.background} />
+                <Text style={[styles.badgeText, { color: colors.background }]}>
+                  {snippet.tags.split(",").slice(0, 2).join(", ")}
+                  {snippet.tags.split(",").length > 2 ? "+" : ""}
+                </Text>
+              </View>
+            ) : null}
           </View>
           <Text style={[styles.cardDate, { color: colors.subtext }]}>
             {new Date(snippet.createdAt).toLocaleDateString()}
@@ -138,6 +149,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  badgesContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   badge: {
     flexDirection: "row",

@@ -97,7 +97,9 @@ export default function SnippetBrowser({
         const matchesQuery =
           !query ||
           snippet.title.toLowerCase().includes(query) ||
-          snippet.code.toLowerCase().includes(query);
+          snippet.code.toLowerCase().includes(query) ||
+          snippet.language.toLowerCase().includes(query) ||
+          snippet.tags.toLowerCase().includes(query);
 
         return matchesFavorite && matchesQuery;
       }),

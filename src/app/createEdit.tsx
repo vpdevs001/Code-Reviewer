@@ -13,6 +13,9 @@ export default function CreateEdit() {
   const snippetId = params.id ? Number(params.id) : null;
   const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("javascript");
+  const [tags, setTags] = useState("");
+  const [attachments, setAttachments] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -24,6 +27,9 @@ export default function CreateEdit() {
       if (snippet) {
         setTitle(snippet.title);
         setCode(snippet.code);
+        setLanguage(snippet.language || "javascript");
+        setTags(snippet.tags || "");
+        setAttachments(snippet.attachments || "");
       }
       setLoading(false);
     }
@@ -38,9 +44,22 @@ export default function CreateEdit() {
 
     setSaving(true);
     if (snippetId) {
-      await updateSnippet(snippetId, title.trim(), code.trim());
+      await updateSnippet(
+        snippetId,
+        title.trim(),
+        code.trim(),
+        language.trim(),
+        tags.trim(),
+        attachments.trim(),
+      );
     } else {
-      await addSnippet(title.trim() || "Untitled snippet", code.trim());
+      await addSnippet(
+        title.trim() || "Untitled snippet",
+        code.trim(),
+        language.trim(),
+        tags.trim(),
+        attachments.trim(),
+      );
     }
     setSaving(false);
     router.push("/");
@@ -57,11 +76,17 @@ export default function CreateEdit() {
         <SnippetForm
           code={code}
           isEditing={Boolean(snippetId)}
+          language={language}
           loading={loading}
           saving={saving}
+          tags={tags}
           title={title}
+          attachments={attachments}
           onChangeCode={setCode}
+          onChangeLanguage={setLanguage}
+          onChangeTags={setTags}
           onChangeTitle={setTitle}
+          onChangeAttachments={setAttachments}
           onSave={handleSave}
         />
       </ScrollView>
