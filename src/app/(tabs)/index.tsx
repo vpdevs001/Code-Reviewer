@@ -9,7 +9,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SearchBar from "../../components/SearchBar";
+import Greetings from "../../components/Greetings";
 import { addSnippet, getSnippets, initDb, SnippetRow } from "../../db/database";
+import { getUsername } from "../../utils/userStorage";
 import { useTheme } from "../../hooks/theme";
 import { useRouter } from "expo-router";
 
@@ -17,6 +19,7 @@ export default function Index() {
   const [status, setStatus] = useState("Initializing database...");
   const [snippets, setSnippets] = useState<SnippetRow[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [username, setUsername] = useState("");
   const { colors } = useTheme();
   const router = useRouter();
   const fade = useRef(new Animated.Value(0)).current;
@@ -32,6 +35,11 @@ export default function Index() {
         setStatus(
           `Failed to initialize: ${error instanceof Error ? error.message : "unknown error"}`,
         );
+      }
+
+      const storedName = await getUsername();
+      if (storedName) {
+        setUsername(storedName);
       }
     }
 
@@ -51,6 +59,8 @@ export default function Index() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
+      <Greetings username={username} />
+
       <View style={styles.topRow}>
         <SearchBar inline value={searchQuery} onChangeText={setSearchQuery} />
         <TouchableOpacity
