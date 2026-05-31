@@ -6,7 +6,6 @@ export type SnippetRow = {
   code: string;
   language: string;
   tags: string;
-  attachments: string;
   favorite: number;
   createdAt: string;
 };
@@ -29,24 +28,39 @@ export async function initDb() {
       code TEXT NOT NULL,
       language TEXT NOT NULL DEFAULT 'javascript',
       tags TEXT NOT NULL DEFAULT '',
-      attachments TEXT NOT NULL DEFAULT '',
       favorite INTEGER NOT NULL DEFAULT 0,
       createdAt TEXT NOT NULL
     );`,
   );
+
+  // Migration: Add new columns if they don't exist
+  try {
+    await db.execAsync(
+      `ALTER TABLE snippets ADD COLUMN language TEXT NOT NULL DEFAULT 'javascript';`,
+    );
+  } catch (e) {
+    // Column already exists
+  }
+  try {
+    await db.execAsync(
+      `ALTER TABLE snippets ADD COLUMN tags TEXT NOT NULL DEFAULT '';`,
+    );
+  } catch (e) {
+    // Column already exists
+  }
 }
 
 export async function getSnippets(): Promise<SnippetRow[]> {
   const db = await getDb();
   return db.getAllAsync<SnippetRow>(
-    "SELECT id, title, code, language, tags, attachments, favorite, createdAt FROM snippets ORDER BY createdAt DESC",
+    "SELECT id, title, code, language, tags, favorite, createdAt FROM snippets ORDER BY createdAt DESC",
   );
 }
 
 export async function getSnippetById(id: number): Promise<SnippetRow | null> {
   const db = await getDb();
   const rows = await db.getAllAsync<SnippetRow>(
-    "SELECT id, title, code, language, tags, attachments, favorite, createdAt FROM snippets WHERE id = ?",
+    "SELECT id, title, code, language, tags, favorite, createdAt FROM snippets WHERE id = ?",
     [id],
   );
   return rows[0] ?? null;
@@ -57,13 +71,12 @@ export async function addSnippet(
   code: string,
   language: string = "javascript",
   tags: string = "",
-  attachments: string = "",
 ) {
   const db = await getDb();
   const createdAt = new Date().toISOString();
   const result = await db.runAsync(
-    "INSERT INTO snippets (title, code, language, tags, attachments, favorite, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?)",
-    [title, code, language, tags, attachments, createdAt],
+    "INSERT INTO snippets (title, code, language, tags, favorite, createdAt) VALUES (?, ?, ?, ?, 0, ?)",
+    [title, code, language, tags, createdAt],
   );
   return result.lastInsertRowId;
 }
@@ -74,12 +87,11 @@ export async function updateSnippet(
   code: string,
   language: string,
   tags: string,
-  attachments: string,
 ) {
   const db = await getDb();
   await db.runAsync(
-    "UPDATE snippets SET title = ?, code = ?, language = ?, tags = ?, attachments = ? WHERE id = ?",
-    [title, code, language, tags, attachments, id],
+    "UPDATE snippets SET title = ?, code = ?, language = ?, tags = ? WHERE id = ?",
+    [title, code, language, tags, id],
   );
 }
 

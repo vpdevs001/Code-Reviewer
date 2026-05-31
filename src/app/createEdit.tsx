@@ -15,7 +15,6 @@ export default function CreateEdit() {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
   const [tags, setTags] = useState("");
-  const [attachments, setAttachments] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -29,7 +28,6 @@ export default function CreateEdit() {
         setCode(snippet.code);
         setLanguage(snippet.language || "javascript");
         setTags(snippet.tags || "");
-        setAttachments(snippet.attachments || "");
       }
       setLoading(false);
     }
@@ -50,7 +48,6 @@ export default function CreateEdit() {
         code.trim(),
         language.trim(),
         tags.trim(),
-        attachments.trim(),
       );
     } else {
       await addSnippet(
@@ -58,7 +55,6 @@ export default function CreateEdit() {
         code.trim(),
         language.trim(),
         tags.trim(),
-        attachments.trim(),
       );
     }
     setSaving(false);
@@ -81,12 +77,10 @@ export default function CreateEdit() {
           saving={saving}
           tags={tags}
           title={title}
-          attachments={attachments}
           onChangeCode={setCode}
           onChangeLanguage={setLanguage}
           onChangeTags={setTags}
           onChangeTitle={setTitle}
-          onChangeAttachments={setAttachments}
           onSave={handleSave}
         />
       </ScrollView>
@@ -100,6 +94,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 28,
-    paddingBottom: 44,
+    paddingBottom: 300,
   },
 });

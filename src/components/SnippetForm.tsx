@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { fonts } from "../constants/typography";
 import { useTheme } from "../hooks/theme";
+import CodeEditor from "./CodeEditor";
 
 type SnippetFormProps = {
   code: string;
@@ -19,12 +20,10 @@ type SnippetFormProps = {
   title: string;
   language: string;
   tags: string;
-  attachments: string;
   onChangeCode: (value: string) => void;
   onChangeTitle: (value: string) => void;
   onChangeLanguage: (value: string) => void;
   onChangeTags: (value: string) => void;
-  onChangeAttachments: (value: string) => void;
   onSave: () => void;
 };
 
@@ -36,12 +35,10 @@ export default function SnippetForm({
   title,
   language,
   tags,
-  attachments,
   onChangeCode,
   onChangeTitle,
   onChangeLanguage,
   onChangeTags,
-  onChangeAttachments,
   onSave,
 }: SnippetFormProps) {
   const { colors } = useTheme();
@@ -112,13 +109,11 @@ export default function SnippetForm({
             <Text style={[styles.fieldLabel, { color: colors.text }]}>
               Code
             </Text>
-            <TextInput
+            <CodeEditor
               value={code}
-              onChangeText={onChangeCode}
+              onChange={onChangeCode}
               placeholder="Paste or type your code here"
-              placeholderTextColor={colors.placeholder}
-              style={[styles.codeInput, { color: colors.text }]}
-              multiline
+              subtextColor={colors.text}
             />
           </View>
           <View
@@ -195,23 +190,6 @@ export default function SnippetForm({
               value={tags}
               onChangeText={onChangeTags}
               placeholder="react, hooks, api"
-              placeholderTextColor={colors.placeholder}
-              style={[styles.input, { color: colors.text }]}
-            />
-          </View>
-          <View
-            style={[
-              styles.field,
-              { borderColor: colors.border, backgroundColor: colors.surface },
-            ]}
-          >
-            <Text style={[styles.fieldLabel, { color: colors.text }]}>
-              Attachments (file paths, comma separated)
-            </Text>
-            <TextInput
-              value={attachments}
-              onChangeText={onChangeAttachments}
-              placeholder="/path/to/file1.txt, /path/to/file2.js"
               placeholderTextColor={colors.placeholder}
               style={[styles.input, { color: colors.text }]}
             />

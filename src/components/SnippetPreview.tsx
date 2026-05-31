@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -10,13 +11,14 @@ import {
 import { fonts } from "../constants/typography";
 import { SnippetRow } from "../db/database";
 import { useTheme } from "../hooks/theme";
-import { saveSnippetLocally, shareSnippet } from "../utils/export";
+import { shareSnippet } from "../utils/export";
+import { CodeLine } from "../utils/syntaxHighlighter";
 
 type SnippetPreviewProps = {
   loading: boolean;
   snippet: Pick<
     SnippetRow,
-    "title" | "code" | "language" | "tags" | "attachments" | "createdAt"
+    "title" | "code" | "language" | "tags" | "createdAt"
   > | null;
   onEdit: () => void;
 };
@@ -27,19 +29,6 @@ export default function SnippetPreview({
   onEdit,
 }: SnippetPreviewProps) {
   const { colors } = useTheme();
-
-  async function handleExport(format: "text" | "js" | "json") {
-    if (!snippet) return;
-    try {
-      const uri = saveSnippetLocally(snippet, format);
-      Alert.alert(
-        "Export Successful",
-        `Snippet exported as ${format.toUpperCase()} and saved to local files.`,
-      );
-    } catch (error) {
-      Alert.alert("Export Failed", "Failed to export snippet.");
-    }
-  }
 
   async function handleShare(format: "text" | "js" | "json") {
     if (!snippet) return;
@@ -84,12 +73,9 @@ export default function SnippetPreview({
             { backgroundColor: colors.surface, borderColor: colors.border },
           ]}
         >
-          <Text style={[styles.snippetTitle, { color: colors.text }]}>
-            {snippet.title}
-          </Text>
-          <View style={styles.snippetMetaRow}>
-            <Text style={[styles.snippetMeta, { color: colors.subtext }]}>
-              Created {new Date(snippet.createdAt).toLocaleString()}
+          <View style={styles.titleRow}>
+            <Text style={[styles.snippetTitle, { color: colors.text }]}>
+              {snippet.title}
             </Text>
             <View style={[styles.badge, { backgroundColor: colors.border }]}>
               <Feather name="code" size={14} color={colors.text} />
@@ -98,6 +84,9 @@ export default function SnippetPreview({
               </Text>
             </View>
           </View>
+          <Text style={[styles.snippetMeta, { color: colors.subtext }]}>
+            Created {new Date(snippet.createdAt).toLocaleString()}
+          </Text>
           {snippet.tags && snippet.tags.trim() ? (
             <View style={styles.tagsContainer}>
               {snippet.tags.split(",").map((tag, index) => (
@@ -112,54 +101,33 @@ export default function SnippetPreview({
               ))}
             </View>
           ) : null}
-          {snippet.attachments && snippet.attachments.trim() ? (
-            <View style={styles.attachmentsContainer}>
-              <Text
-                style={[styles.attachmentsLabel, { color: colors.subtext }]}
-              >
-                <Feather name="paperclip" size={14} color={colors.subtext} />{" "}
-                Attachments:
-              </Text>
-              {snippet.attachments.split(",").map((attachment, index) => (
-                <Text
-                  key={index}
-                  style={[styles.attachmentText, { color: colors.text }]}
-                >
-                  {attachment.trim()}
-                </Text>
-              ))}
-            </View>
-          ) : null}
+
           <View
             style={[
               styles.editor,
-              {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
-              },
+              { backgroundColor: "#282c34", borderColor: colors.border },
             ]}
           >
-            <Text style={[styles.code, { color: colors.text }]}>
-              {snippet.code}
-            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <ScrollView
+                nestedScrollEnabled
+                showsVerticalScrollIndicator={false}
+              >
+                <View style={styles.codeContainer}>
+                  {snippet.code.split("\n").map((line, index) => (
+                    <CodeLine
+                      key={index}
+                      line={line}
+                      lineNumber={index + 1}
+                      subtextColor={colors.subtext}
+                    />
+                  ))}
+                </View>
+              </ScrollView>
+            </ScrollView>
           </View>
+
           <View style={styles.actionButtons}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.8 : 1,
-                },
-              ]}
-              onPress={() => handleExport("text")}
-            >
-              <Feather name="download" size={18} color={colors.text} />
-              <Text style={[styles.actionButtonText, { color: colors.text }]}>
-                Export
-              </Text>
-            </Pressable>
             <Pressable
               style={({ pressed }) => [
                 styles.actionButton,
@@ -230,11 +198,11 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     fontFamily: fonts.regular,
   },
-  snippetMetaRow: {
+  titleRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 18,
+    marginBottom: 8,
   },
   badge: {
     flexDirection: "row",
@@ -263,30 +231,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.semiBold,
   },
-  attachmentsContainer: {
-    marginBottom: 18,
-  },
-  attachmentsLabel: {
-    fontSize: 14,
-    fontFamily: fonts.semiBold,
-    marginBottom: 8,
-  },
-  attachmentText: {
-    fontSize: 13,
-    fontFamily: fonts.code,
-    marginBottom: 4,
-    marginLeft: 20,
-  },
   editor: {
     borderWidth: 1,
     borderRadius: 18,
     padding: 18,
     marginTop: 20,
+    maxHeight: 400,
   },
-  code: {
-    fontSize: 15,
-    lineHeight: 26,
-    fontFamily: fonts.code,
+  codeContainer: {
+    flexDirection: "column",
   },
   emptyState: {
     alignItems: "center",
