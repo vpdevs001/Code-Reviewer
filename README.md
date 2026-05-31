@@ -26,11 +26,6 @@ A developer-focused mobile app to save, organize, and manage code snippets entir
 - All data lives in a local SQLite database
 - Full CRUD and search work completely without an internet connection
 
-### File Management
-- Attach files or screenshots to snippets
-- Browse, move, copy, and delete local files
-- Download and store templates or resources
-
 ### Export & Share
 - Export snippets as `.txt`, `.js`, or `.json`
 - Share snippets with other apps via the native share sheet
@@ -64,18 +59,44 @@ A developer-focused mobile app to save, organize, and manage code snippets entir
 
 ```
 devsnippets/
-├── app/                  # Screens (Expo Router)
-│   ├── index.tsx         # Home
-│   ├── create.tsx        # Create / Edit Snippet
-│   ├── snippet/[id].tsx  # Snippet Detail
-│   ├── favorites.tsx     # Favorites
-│   ├── files.tsx         # File Manager
-│   └── settings.tsx      # Settings
-├── components/           # Reusable UI components
-├── db/                   # SQLite setup and queries
-├── hooks/                # Custom React hooks
-├── utils/                # Helper functions (export, share, etc.)
-└── types/                # TypeScript types and interfaces
+├── src/
+│   ├── app/                        # Screens (Expo Router)
+│   │   ├── (tabs)/                 # Tab navigator group
+│   │   │   ├── _layout.tsx         # Tab layout config
+│   │   │   ├── index.tsx           # Home
+│   │   │   ├── favorites.tsx       # Favorites
+│   │   │   └── settings.tsx        # Settings
+│   │   ├── snippet/
+│   │   │   └── [id].tsx            # Snippet Detail
+│   │   ├── _layout.tsx             # Root layout
+│   │   ├── createEdit.tsx          # Create / Edit Snippet
+│   │   └── files.tsx               # File Manager
+│   ├── components/
+│   │   ├── CodeEditor.tsx
+│   │   ├── Greetings.tsx
+│   │   ├── SearchBar.tsx
+│   │   ├── SnippetBrowser.tsx
+│   │   ├── SnippetCard.tsx
+│   │   ├── SnippetForm.tsx
+│   │   └── SnippetPreview.tsx
+│   ├── db/
+│   │   └── database.ts             # SQLite setup and queries
+│   ├── hooks/
+│   │   └── theme.tsx               # Theme hook
+│   └── utils/
+│       ├── export.ts               # Export helpers
+│       ├── syntaxHighlighter.tsx   # Syntax highlighting
+│       └── userStorage.ts          # Local storage helpers
+├── assets/                         # Static assets
+├── .claude/
+├── .vscode/
+├── AGENTS.md
+├── CLAUDE.md
+├── app.json
+├── tsconfig.json
+├── package.json
+├── pnpm-workspace.yaml
+└── pnpm-lock.yaml
 ```
 
 ---
